@@ -76,4 +76,5 @@ def home(request):
         except Exception as e:
             context["error"] = f"Error during prediction: {e}"
 
-    return render(request, "index.html", context)
+    return render(request, "predictor/index.html", context)
+
