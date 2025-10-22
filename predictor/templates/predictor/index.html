@@ -12,7 +12,6 @@
             min-height: 100vh;
             color: #fff;
         }
-
         .container {
             display: flex;
             flex-wrap: wrap;
@@ -21,27 +20,10 @@
             justify-content: center;
             align-items: flex-start;
         }
-
-        .left-panel {
-            flex: 0 0 40%;
-        }
-
-        .left-panel h2 {
-            font-size: 2rem;
-            margin-bottom: 15px;
-        }
-
-        .left-panel h3 {
-            font-size: 1.5rem;
-            margin-top: 30px;
-            margin-bottom: 10px;
-        }
-
-        .left-panel p {
-            line-height: 1.6;
-            font-size: 1rem;
-        }
-
+        .left-panel { flex: 0 0 40%; }
+        .left-panel h2 { font-size: 2rem; margin-bottom: 15px; }
+        .left-panel h3 { font-size: 1.5rem; margin-top: 30px; margin-bottom: 10px; }
+        .left-panel p { line-height: 1.6; font-size: 1rem; }
         .right-panel {
             flex: 0 0 50%;
             background: #ffffffcc;
@@ -50,13 +32,11 @@
             border-radius: 15px;
             box-shadow: 0px 8px 20px rgba(0,0,0,0.2);
         }
-
         .right-panel form {
             display: flex;
             flex-direction: column;
             gap: 15px;
         }
-
         .right-panel input, 
         .right-panel select, 
         .right-panel button {
@@ -65,7 +45,6 @@
             border: 1px solid #ccc;
             font-size: 1rem;
         }
-
         .right-panel button {
             background-color: #6a11cb;
             color: #fff;
@@ -74,35 +53,25 @@
             transition: all 0.3s ease;
             border: none;
         }
-
         .right-panel button:hover {
             background-color: #2575fc;
             transform: translateY(-3px);
             box-shadow: 0px 4px 10px rgba(0,0,0,0.2);
         }
-
-        /* Responsive */
         @media (max-width: 900px) {
-            .left-panel, .right-panel {
-                flex: 0 0 100%;
-            }
-
-            .container {
-                padding: 20px;
-            }
+            .left-panel, .right-panel { flex: 0 0 100%; }
+            .container { padding: 20px; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Left Panel -->
         <div class="left-panel">
             <h2>What is Osteoporosis?</h2>
             <p>
                 Osteoporosis is a condition where bones become weak and brittle, making them more prone to fractures.
                 It often develops silently over years and is influenced by age, gender, lifestyle, and genetics.
             </p>
-
             <h3>About Us</h3>
             <p>
                 This app predicts the probability of Osteoporosis based on health, lifestyle, and family history factors.
@@ -111,7 +80,6 @@
             </p>
         </div>
 
-        <!-- Right Panel -->
         <div class="right-panel">
             <form method="POST" action="/">
                 {% csrf_token %}
@@ -131,7 +99,7 @@
                 <select name="hormone" required>
                     <option value="">Hormone Therapy</option>
                     <option value="Normal">Normal</option>
-                    <option value="Yes">Yes</option>
+                    <option value="Postmenopausal">Postmenopausal</option>
                 </select>
                 <select name="fhistory" required>
                     <option value="">Family History of Osteoporosis</option>
@@ -152,7 +120,7 @@
                 <select name="activity" required>
                     <option value="">Physical Activity</option>
                     <option value="Active">Active</option>
-                    <option value="Inactive">Inactive</option>
+                    <option value="Sedentary">Sedentary</option>
                 </select>
                 <select name="smoking" required>
                     <option value="">Smoking Habit</option>
@@ -162,6 +130,7 @@
                 <select name="medcondition" required>
                     <option value="">Medical Conditions</option>
                     <option value="Hyperthyroidism">Hyperthyroidism</option>
+                    <option value="Rheumatoid Arthritis">Rheumatoid Arthritis</option>
                     <option value="None">None</option>
                 </select>
                 <select name="medications" required>
@@ -179,11 +148,11 @@
         </div>
     </div>
 
-    <!-- Alert for Prediction -->
     <script>
-        {% if prediction %}
-            alert("Prediction Result: {{ prediction }}");
-        {% endif %}
-    </script>
+    {% if prediction %}
+        alert("Prediction Result: {{ prediction }}");
+    {% endif %}
+</script>
+
 </body>
 </html>
