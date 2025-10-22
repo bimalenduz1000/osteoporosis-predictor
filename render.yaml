@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: osteopredictor
+    env: python
+    buildCommand: "./manage.py collectstatic --noinput"
+    startCommand: "gunicorn yourprojectname.wsgi:application"
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: yourprojectname.settings
+      - key: SECRET_KEY
+        value: your-secret-key-here
+      - key: DEBUG
+        value: False

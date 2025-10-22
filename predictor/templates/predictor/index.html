@@ -83,84 +83,87 @@
         <div class="right-panel">
             <form method="POST" action="/">
                 {% csrf_token %}
-                <input type="number" name="age" placeholder="Age" required>
+                <input type="number" name="age" placeholder="Age" required value="{{ form_data.age|default:'' }}">
+
                 <select name="gender" required>
                     <option value="">Gender</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
+                    <option value="Male" {% if form_data.gender == "Male" %}selected{% endif %}>Male</option>
+                    <option value="Female" {% if form_data.gender == "Female" %}selected{% endif %}>Female</option>
                 </select>
+
                 <select name="race" required>
                     <option value="">Ethnic Background</option>
-                    <option value="Caucasian">Caucasian</option>
-                    <option value="African American">African American</option>
-                    <option value="Asian">Asian</option>
-                    <option value="Other">Other</option>
+                    <option value="Caucasian" {% if form_data.race == "Caucasian" %}selected{% endif %}>Caucasian</option>
+                    <option value="African American" {% if form_data.race == "African American" %}selected{% endif %}>African American</option>
+                    <option value="Asian" {% if form_data.race == "Asian" %}selected{% endif %}>Asian</option>
+                    <option value="Other" {% if form_data.race == "Other" %}selected{% endif %}>Other</option>
                 </select>
+
                 <select name="hormone" required>
                     <option value="">Hormone Therapy</option>
-                    <option value="Normal">Normal</option>
-                    <option value="Postmenopausal">Postmenopausal</option>
+                    <option value="Normal" {% if form_data.hormone == "Normal" %}selected{% endif %}>Normal</option>
+                    <option value="Postmenopausal" {% if form_data.hormone == "Postmenopausal" %}selected{% endif %}>Postmenopausal</option>
                 </select>
+
                 <select name="fhistory" required>
                     <option value="">Family History of Osteoporosis</option>
-                    <option value="Yes">Yes</option>
-                    <option value="No">No</option>
+                    <option value="Yes" {% if form_data.fhistory == "Yes" %}selected{% endif %}>Yes</option>
+                    <option value="No" {% if form_data.fhistory == "No" %}selected{% endif %}>No</option>
                 </select>
+
                 <select name="weight" required>
                     <option value="">Weight</option>
-                    <option value="Normal">Normal</option>
-                    <option value="Overweight">Overweight</option>
-                    <option value="Underweight">Underweight</option>
+                    <option value="Normal" {% if form_data.weight == "Normal" %}selected{% endif %}>Normal</option>
+                    <option value="Overweight" {% if form_data.weight == "Overweight" %}selected{% endif %}>Overweight</option>
+                    <option value="Underweight" {% if form_data.weight == "Underweight" %}selected{% endif %}>Underweight</option>
                 </select>
+
                 <select name="calcium" required>
                     <option value="">Calcium Intake</option>
-                    <option value="Adequate">Adequate</option>
-                    <option value="Low">Low</option>
+                    <option value="Adequate" {% if form_data.calcium == "Adequate" %}selected{% endif %}>Adequate</option>
+                    <option value="Low" {% if form_data.calcium == "Low" %}selected{% endif %}>Low</option>
                 </select>
+
                 <select name="activity" required>
                     <option value="">Physical Activity</option>
-                    <option value="Active">Active</option>
-                    <option value="Sedentary">Sedentary</option>
+                    <option value="Active" {% if form_data.activity == "Active" %}selected{% endif %}>Active</option>
+                    <option value="Sedentary" {% if form_data.activity == "Sedentary" %}selected{% endif %}>Sedentary</option>
                 </select>
+
                 <select name="smoking" required>
                     <option value="">Smoking Habit</option>
-                    <option value="Yes">Yes</option>
-                    <option value="No">No</option>
+                    <option value="Yes" {% if form_data.smoking == "Yes" %}selected{% endif %}>Yes</option>
+                    <option value="No" {% if form_data.smoking == "No" %}selected{% endif %}>No</option>
                 </select>
+
                 <select name="medcondition" required>
                     <option value="">Medical Conditions</option>
-                    <option value="Hyperthyroidism">Hyperthyroidism</option>
-                    <option value="Rheumatoid Arthritis">Rheumatoid Arthritis</option>
-                    <option value="None">None</option>
+                    <option value="Hyperthyroidism" {% if form_data.medcondition == "Hyperthyroidism" %}selected{% endif %}>Hyperthyroidism</option>
+                    <option value="Rheumatoid Arthritis" {% if form_data.medcondition == "Rheumatoid Arthritis" %}selected{% endif %}>Rheumatoid Arthritis</option>
+                    <option value="None" {% if form_data.medcondition == "None" %}selected{% endif %}>None</option>
                 </select>
+
                 <select name="medications" required>
                     <option value="">Medications</option>
-                    <option value="Corticosteroids">Corticosteroids</option>
-                    <option value="None">None</option>
+                    <option value="Corticosteroids" {% if form_data.medications == "Corticosteroids" %}selected{% endif %}>Corticosteroids</option>
+                    <option value="None" {% if form_data.medications == "None" %}selected{% endif %}>None</option>
                 </select>
+
                 <select name="fractures" required>
                     <option value="">History of Fractures</option>
-                    <option value="Yes">Yes</option>
-                    <option value="No">No</option>
+                    <option value="Yes" {% if form_data.fractures == "Yes" %}selected{% endif %}>Yes</option>
+                    <option value="No" {% if form_data.fractures == "No" %}selected{% endif %}>No</option>
                 </select>
+
                 <button type="submit">Predict</button>
             </form>
         </div>
     </div>
 
-    {% if prediction %}
-    <div style="text-align:center; margin-top:20px; font-size:1.2rem; color:#fff;">
-        <strong>Prediction Result: {{ prediction }}</strong>
-    </div>
-{% endif %}
-
-{% if error %}
-    <div style="text-align:center; margin-top:20px; font-size:1.2rem; color:#ffdddd;">
-        <strong>{{ error }}</strong>
-    </div>
-{% endif %}
-
-
-
+    <script>
+        {% if result %}
+            alert("Prediction Result: {{ result }}");
+        {% endif %}
+    </script>
 </body>
 </html>
