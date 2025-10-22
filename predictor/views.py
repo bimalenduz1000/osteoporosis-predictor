@@ -1,68 +1,79 @@
-import os
-import pickle
-import numpy as np
-from django.shortcuts import render, redirect
-from django.conf import settings
+# predictor/views.py
+from django.shortcuts import render
+import joblib
+import pandas as pd
 
-# Load the model
-MODEL_PATH = os.path.join(settings.BASE_DIR, 'osp.pkl')
-with open(MODEL_PATH, 'rb') as file:
-    model = pickle.load(file)
+# Load the pre-trained model
+MODEL_PATH = "predictor/osp.joblib"  # Ensure this path is correct
+model = joblib.load(MODEL_PATH)
+
+# All columns used during training (numeric + one-hot)
+ALL_COLUMNS = [
+    "Age",
+    "Gender_Asian", "Gender_Male",
+    "Race_Asian", "Race_Other",
+    "Hormone_Normal",
+    "FHistory_No",
+    "Weight_Normal",
+    "Calcium_Adequate",
+    "Activity_Active",
+    "Smoking_No",
+    "MedCondition_Rheumatoid Arthritis",
+    "Medications_Corticosteroids",
+    "Fractures_No"
+]
+
+# Helper function to map categorical input to one-hot
+def map_categorical_input(form_data):
+    mapping = {
+        "Gender_Asian": 1 if form_data["gender"] == "Asian" else 0,
+        "Gender_Male": 1 if form_data["gender"] == "Male" else 0,
+        "Race_Asian": 1 if form_data["race"] == "Asian" else 0,
+        "Race_Other": 1 if form_data["race"] not in ["Asian", "Caucasian", "African American"] else 0,
+        "Hormone_Normal": 1 if form_data["hormone"] == "Normal" else 0,
+        "FHistory_No": 1 if form_data["fhistory"] == "No" else 0,
+        "Weight_Normal": 1 if form_data["weight"] == "Normal" else 0,
+        "Calcium_Adequate": 1 if form_data["calcium"] == "Adequate" else 0,
+        "Activity_Active": 1 if form_data["activity"] == "Active" else 0,
+        "Smoking_No": 1 if form_data["smoking"] == "No" else 0,
+        "MedCondition_Rheumatoid Arthritis": 1 if form_data["medcondition"] == "Rheumatoid Arthritis" else 0,
+        "Medications_Corticosteroids": 1 if form_data["medications"] == "Corticosteroids" else 0,
+        "Fractures_No": 1 if form_data["fractures"] == "No" else 0
+    }
+    return mapping
 
 def home(request):
-    if request.method == 'POST':
-        # Collect user input
-        age = float(request.POST.get('age', 0))
-        gender = request.POST.get('gender', 'Female')
-        hormone = request.POST.get('hormone', 'Normal')
-        fhistory = request.POST.get('fhistory', 'No')
-        race = request.POST.get('race', 'Caucasian')
-        weight = request.POST.get('weight', 'Normal')
-        calcium = request.POST.get('calcium', 'Adequate')
-        activity = request.POST.get('activity', 'Active')
-        smoking = request.POST.get('smoking', 'No')
-        medcondition = request.POST.get('medcondition', 'Hyperthyroidism')
-        medications = request.POST.get('medications', 'Corticosteroids')
-        fractures = request.POST.get('fractures', 'No')
+    context = {}
+    if request.method == "POST":
+        try:
+            # Read form inputs
+            form_data = {
+                "age": int(request.POST.get("age", 0)),
+                "gender": request.POST.get("gender", ""),
+                "race": request.POST.get("race", ""),
+                "hormone": request.POST.get("hormone", ""),
+                "fhistory": request.POST.get("fhistory", ""),
+                "weight": request.POST.get("weight", ""),
+                "calcium": request.POST.get("calcium", ""),
+                "activity": request.POST.get("activity", ""),
+                "smoking": request.POST.get("smoking", ""),
+                "medcondition": request.POST.get("medcondition", ""),
+                "medications": request.POST.get("medications", ""),
+                "fractures": request.POST.get("fractures", "")
+            }
 
-        # Prepare features
-        features = [
-            age,
-            1 if gender == 'Female' else 0,
-            1 if gender == 'Male' else 0,
-            1 if hormone == 'Normal' else 0,
-            1 if hormone == 'Postmenopausal' else 0,
-            1 if fhistory == 'No' else 0,
-            1 if fhistory == 'Yes' else 0,
-            1 if race == 'African American' else 0,
-            1 if race == 'Asian' else 0,
-            1 if race == 'Caucasian' else 0,
-            1 if weight == 'Normal' else 0,
-            1 if weight == 'Underweight' else 0,
-            1 if calcium == 'Adequate' else 0,
-            1 if calcium == 'Low' else 0,
-            1 if activity == 'Active' else 0,
-            1 if activity == 'Sedentary' else 0,
-            1 if smoking == 'No' else 0,
-            1 if smoking == 'Yes' else 0,
-            1 if medcondition == 'Hyperthyroidism' else 0,
-            1 if medcondition == 'Rheumatoid Arthritis' else 0,
-            1 if medications == 'Corticosteroids' else 0,
-            1 if fractures == 'No' else 0,
-            1 if fractures == 'Yes' else 0,
-        ]
+            # Create input DataFrame
+            input_dict = {"Age": [form_data["age"]]}
+            input_dict.update({col: [val] for col, val in map_categorical_input(form_data).items()})
 
-        # Prediction
-        X_input = np.array([features])
-        result = model.predict(X_input)[0]
-        prediction = 'Osteoporosis' if int(result) == 1 else 'No Osteoporosis'
+            # Make sure columns match model
+            X_input = pd.DataFrame(input_dict, columns=ALL_COLUMNS)
 
-        # ✅ Save the result in session (not in GET param)
-        request.session['prediction'] = prediction
+            # Predict
+            prediction = model.predict(X_input)[0]
+            context["prediction"] = "Yes, at risk" if prediction == 1 else "No, low risk"
 
-        # Redirect (avoids refresh issue)
-        return redirect('/')
+        except Exception as e:
+            context["error"] = f"Error during prediction: {e}"
 
-    # Handle GET request
-    prediction = request.session.pop('prediction', None)
-    return render(request, 'predictor/index.html', {'prediction': prediction})
+    return render(request, "index.html", context)
